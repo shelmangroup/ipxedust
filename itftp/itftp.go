@@ -101,6 +101,7 @@ func (t Handler) HandleRead(filename string, rf io.ReaderFrom) error {
 	}
 
 	ct := bytes.NewReader(content)
+	rf.(tftp.OutgoingTransfer).SetSize(int64(len(content)))
 	b, err := rf.ReadFrom(ct)
 	if err != nil {
 		log.Error(err, "file serve failed", "b", b, "contentSize", len(content))
