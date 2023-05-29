@@ -189,11 +189,20 @@ func (c *Server) listenAndServeTFTP(ctx context.Context) error {
 
 	h := &itftp.Handler{Log: c.Log, Patch: c.TFTP.Patch}
 	ts := tftp.NewServer(h.HandleRead, h.HandleWrite)
+	ts.SetBlockSize(1200)
 	ts.SetTimeout(c.TFTP.Timeout)
 	if c.EnableTFTPSinglePort {
 		ts.EnableSinglePort()
 	}
-	c.Log.Info("serving iPXE binaries via TFTP", "addr", c.TFTP.Addr, "timeout", c.TFTP.Timeout, "singlePortEnabled", c.EnableTFTPSinglePort)
+	c.Log.Info(
+		"serving iPXE binaries via TFTP",
+		"addr",
+		c.TFTP.Addr,
+		"timeout",
+		c.TFTP.Timeout,
+		"singlePortEnabled",
+		c.EnableTFTPSinglePort,
+	)
 	go func() {
 		<-ctx.Done()
 		conn.Close()
@@ -213,7 +222,15 @@ func (c *Server) serveTFTP(ctx context.Context, conn net.PacketConn) error {
 	if c.EnableTFTPSinglePort {
 		ts.EnableSinglePort()
 	}
-	c.Log.Info("serving iPXE binaries via TFTP", "addr", conn.LocalAddr().String(), "timeout", c.TFTP.Timeout, "singlePortEnabled", c.EnableTFTPSinglePort)
+	c.Log.Info(
+		"serving iPXE binaries via TFTP",
+		"addr",
+		conn.LocalAddr().String(),
+		"timeout",
+		c.TFTP.Timeout,
+		"singlePortEnabled",
+		c.EnableTFTPSinglePort,
+	)
 	go func() {
 		<-ctx.Done()
 		conn.Close()
